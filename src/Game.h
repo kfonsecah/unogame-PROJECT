@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 class Game {
 public:
@@ -19,6 +20,10 @@ private:
     sf::Sprite playerVsPlayerButtonSprite;
     sf::Texture playerVsPcButtonTexture;
     sf::Sprite playerVsPcButtonSprite;
+    sf::Texture startButtonTexture;
+    sf::Sprite startButtonSprite;
+
+ 
 
     bool inInitialScreen;
     bool inMainMenu;
