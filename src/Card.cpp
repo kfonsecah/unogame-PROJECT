@@ -67,3 +67,32 @@ Card& Card::operator=(const Card& other) {
     }
     return *this;
 }
+
+void Card::setSprite() {
+    // Construye el nombre del archivo de textura como lo hacías antes
+    std::string filename = "resources/cards/";
+    filename += color;
+
+    if (type != "Common") {
+        filename += type;
+    }
+    else {
+        filename += std::to_string(number);
+    }
+
+    filename += ".png";
+
+    // Crea una textura y carga la imagen en ella
+    sf::Texture texture;
+    if (texture.loadFromFile(filename)) {
+        std::cout << "Loaded texture from: " << filename << std::endl;
+        sprite.setTexture(texture); // Configura la textura en el sprite
+    }
+    else {
+        std::cout << "Failed to load image \"" << filename << "\". Reason: Unable to open file" << std::endl;
+    }
+}
+// Implementación del método getSprite
+sf::Sprite& Card::getSprite() {
+    return sprite;
+}

@@ -27,8 +27,17 @@ public:
 
     // Copy assignment operator
     Card& operator=(const Card& other);
+    
 
+    void setSprite();
+
+    // Método para obtener el sprite de la carta
+    sf::Sprite& getSprite();
 private:
+
+    sf::Sprite sprite;
+
+
     sf::Texture texture; // Texture for the card
     std::string type;
     std::string color;   // Color of the card

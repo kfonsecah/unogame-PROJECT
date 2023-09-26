@@ -18,6 +18,7 @@ Deck::Deck() {
 void Deck::initializeDeck() {
     std::string colors[4] = { "redcard", "bluecard", "yellowcard", "greencard" };
     int totalCards = 0; // INITIALIZE THE TOTAL NUMBER OF CARDS TO 0 (DEBUG)
+    
 
     for (int i = 0; i < 4; i++) {
         for (int number = 0; number <= 10; ++number) {
@@ -87,18 +88,30 @@ Card Deck::drawCard() {
 
 // DISPLAY THE ENTIRE DECK ON THE WINDOW
 void Deck::displayDeck(sf::RenderWindow& window) {
-    const float cardWidth = cards[0].getTexture().getSize().x;
-    const float cardHeight = cards[0].getTexture().getSize().y;
+    const float cardWidth = cards[0].getSprite().getLocalBounds().width;
+    const float cardHeight = cards[0].getSprite().getLocalBounds().height;
     float yOffset = 7.0;
     float leftXOffset = 20.0;
     const float cardSpacing = 90.0f;
-   
+
     for (Card& card : cards) {
-        sf::Sprite cardSprite;
-        cardSprite.setTexture(card.getTexture());
+        sf::Sprite& cardSprite = card.getSprite(); // Obtener el sprite de la carta
+
         cardSprite.setPosition(leftXOffset, yOffset);
         cardSprite.setScale(0.13f, 0.13f);
         window.draw(cardSprite);
+
+        // Verificar si se ha hecho clic en la carta
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            sf::FloatRect cardBounds = cardSprite.getGlobalBounds();
+
+            if (cardBounds.contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+                // Mostrar un mensaje en la consola indicando a qué carta le hiciste clic
+                std::cout << "Clickeaste en la carta de color " << card.getColor() << " y número " << card.getNumber() << std::endl;
+            }
+        }
+
         leftXOffset += cardSpacing;
     }
 }
