@@ -2,6 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "Deck.h"
+#include "Card.h"
+#include "Player.h"
+
 
 class Game {
 public:
@@ -12,6 +16,7 @@ public:
 
 private:
     sf::RenderWindow _window;
+
     sf::Texture backgroundTexture;
     sf::Sprite backgroundSprite;
     sf::Texture playButtonTexture;
@@ -23,16 +28,27 @@ private:
     sf::Texture startButtonTexture;
     sf::Sprite startButtonSprite;
 
- 
+
+
 
     bool inInitialScreen;
     bool inMainMenu;
     bool inPlayerVsPlayerScreen;
     bool inPlayerVsPCScreen;
+    bool gameStarted;
+    
 
-    void initialize();
+    Player player1;
+    Player player2;
+
+    Deck mainDeck;
+
+
     void handleEvents();
     void render();
     void playerVsPlayerGame();
-    void update();
+    void InitializeGame();
+    void HandlePlayerAction();
+
+    
 };
