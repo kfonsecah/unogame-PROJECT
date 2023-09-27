@@ -41,7 +41,7 @@ sf::Texture& Card::getTexture() {
 }
 
 sf::Texture& Card::getBackTexture() {
-    backTexture.loadFromFile("resources/cards/Uno.png");
+    backTexture.loadFromFile("resources/cards/EMPTYReverse.png");
     return backTexture;
 }
 

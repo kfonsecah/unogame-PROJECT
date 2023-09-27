@@ -16,16 +16,8 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
     inPlayerVsPCScreen = false;
     gameStarted = false;
 
+    currentTurn = 0;
 
-    
-
-   mainDeck.fillDeck();
-   mainDeck.shuffle();
-
-   player1.drawInitialHand(mainDeck, 7);
-   player2.drawInitialHand(mainDeck, 7);
- 
-   //player2.drawInitialHand(mainDeck, 7);
 
 
    
@@ -60,11 +52,7 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
 Game::~Game() {
 }
 
-void Game::playerVsPlayerGame() {
-    nextTurn();
-  
-    // Implement player vs. player game logic
-}
+
 
 void Game::handleEvents() {
     sf::Event event;
@@ -81,10 +69,9 @@ void Game::handleEvents() {
             }
             else if (inMainMenu) {
                 if (playerVsPlayerButtonSprite.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
+                   
                     inMainMenu = false;
                     inPlayerVsPlayerScreen = true;
-                    playerVsPlayerGame();
-                    handleEventsPlayerVsPlayer(event);
                     gameStarted = true;
                 }
                 else if (inPlayerVsPCScreen) {
@@ -97,17 +84,7 @@ void Game::handleEvents() {
     }
 }
 
-void Game::handleEventsPlayerVsPlayer(sf::Event event) {
-    // Handle events specific to Player vs. Player screen
-    if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::Space) {
-            // Player 1 takes a card from the main deck
-            std::cout << "Player 1 takes a card from the main deck" << std::endl;
-            player1.drawFromMainDeck(mainDeck);
-        }
-    }
-    // Handle other events as needed for this screen
-}
+
 
 
 void Game::InitializeGame() {
@@ -118,6 +95,65 @@ void Game::nextTurn() {
 
 
 }
+void Game::HandleInGamePVP(sf::RenderWindow& window) {
+    // CREATE A TURN VARIABLE TO KEEP TRACK OF THE CURRENT TURN
+    int turn = 1;
+
+    // CREATE A BOOLEAN VARIABLE TO KEEP TRACK OF THE GAME OVER STATE
+    bool gameOver = false;
+
+    // CREATE A DECK OBJECT AND FILL IT WITH CARDS AND SHUFFLE IT
+    Deck mainDeck;
+    mainDeck.fillDeck();
+    mainDeck.shuffle();
+
+    Deck stashDeck;
+
+
+    // CREATE A PLAYER OBJECT AND AN ENTITY OBJECT IN ORDER TO PLAY THE GAME
+    Player player;
+    Player entity;
+
+    // DRAW 7 CARDS FOR THE PLAYER AND THE ENTITY
+    player.drawInitialHand(mainDeck, 7);
+    entity.drawInitialHand(mainDeck, 7);
+
+    // START THE GAME LOOP
+    while (window.isOpen() && !gameOver) {
+        //std::cout << "Current turn: " << turn << std::endl;	
+        // CHECK IF THE PLAYER'S TURN IS OVER
+        if (turn % 2 == 0) {
+            window.clear();
+            _window.draw(backgroundSprite);
+            
+            player.handleHand(window, false, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck); // DISPLAY THE PLAYER'S HAND AS NOT CONTROLLABLE (OFFSET BY 22.0, 7.0) ->AND SCALE BY 0.5 BY DEFAULT<-
+            entity.handleHand(window, true, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck); // DISPLAY THE ENTITY'S HAND AS CONTROLLABLE
+
+
+        }
+        else {
+            window.clear();
+            _window.draw(backgroundSprite);
+           
+            player.handleHand(window, true, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck); // DISPLAY THE PLAYER'S HAND AS CONTROLLABLE
+            entity.handleHand(window, false, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck); // DISPLAY THE ENTITY'S HAND AS NOT CONTROLLABLE (OFFSET BY 22.0, 7.0) ->AND SCALE BY 0.5 BY DEFAULT<-
+        }
+
+        // DISPLAY THE MAIN DECK AS DEBUG 
+        //mainDeck.displayDeck(window, 22.0, 90.0); // Display the main deck
+
+        // DISPLAY THE MAIN WINDOW
+        window.display();
+
+        // GAME OVER LOGIC (CURRENTLY ONLY CHECKS IF THE PLAYER'S HAND IS EMPTY)
+        if (player.getHandSize() == 1) {
+            gameOver = true;
+        }
+    }
+    // GAME OVER SCREEN
+    window.clear();
+}
+
 
 void Game::render() {
     _window.clear();
@@ -131,15 +167,11 @@ void Game::render() {
         _window.draw(playerVsPcButtonSprite);
     }
     else if (inPlayerVsPlayerScreen) {
-        // Display player's hand
-        player1.displayHand(_window, 1); // window, playerNumber1
-        player2.displayHand(_window, 2); // window, playerNumber2
-
-        //mainDeck.displayMainDeck(_window);
-        playerVsPlayerGame();
-        //player2.displayHand(_window, 0, 600);
+		// Handle in-game rendering for player vs. player
+		_window.draw(backgroundSprite);
+        HandleInGamePVP(_window);
         
-   
+        _window.draw(backgroundSprite);
 
     }
     else if (inPlayerVsPCScreen) {

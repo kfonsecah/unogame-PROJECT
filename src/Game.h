@@ -12,6 +12,8 @@ public:
 
     void run();
 
+    Card& operator=(const Card& other);
+
 private:
     sf::RenderWindow _window;
 
@@ -36,13 +38,20 @@ private:
     Player player2;
 
     Deck mainDeck;
+    Deck gameDeck;
+    Deck deck;
 
     int currentTurn;
 
     void handleEvents();
     void render();
-    void playerVsPlayerGame();
+    void playerVsPlayerGame (sf::RenderWindow& window);
     void InitializeGame();
-    void handleEventsPlayerVsPlayer(sf::Event event);
+    
     void nextTurn();
+    
+
+    void handleInGamePVE(sf::RenderWindow& window);
+    void HandleInGamePVP(sf::RenderWindow& window);
+    
 };
