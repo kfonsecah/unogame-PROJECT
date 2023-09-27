@@ -7,27 +7,27 @@ Player::Player() : points(0) {
 }
 
 // Draw initial cards from the main deck
-void Player::drawInitialHand(Deck& mainDeck, int numCards, int playerNumber) {
+void Player::drawInitialHand(Deck& mainDeck, int numCards) {
     for (int i = 0; i < numCards; ++i) {
         Card card = mainDeck.drawCard();
-        if (playerNumber == 1) {
-            hand1.addCard(card);
-        }
-        else if (playerNumber == 2) {
-            hand2.addCard(card);
-        }
+        hand1.addCard(card);
     }
 }
 
-void Player::playCard(Card card, int playerNumber) {
+
+
+
+void Player::playCard(Card card, int playerNumber, Deck& gameDeck) {
     // Implementa la lógica para jugar una carta de la mano correspondiente al jugador
-    if (playerNumber == 1) {
-        // Lógica para el jugador 1
-    }
-    else if (playerNumber == 2) {
-        // Lógica para el jugador 2
-    }
+
 }
+
+void Player::drawFromMainDeck(Deck& mainDeck) {
+    // Llama a la función para tomar una carta del mazo principal y agregarla a la mano del jugador
+    Card card = mainDeck.drawCard();
+    hand1.addCard(card);
+}
+
 
 
 
@@ -63,15 +63,10 @@ int Player::getHandSize(int playerNumber) const {
 void Player::displayHand(sf::RenderWindow& window, int playerNumber) {
     // Implementa la lógica para mostrar la mano del jugador correspondiente en la ventana
     if (playerNumber == 1) {
-        hand1.displayDeck(window);
+        hand1.handleDeck(window, 100.0, 600.0, true);
     }
     else if (playerNumber == 2) {
-        hand2.displayDeck(window);
+        hand1.handleDeck(window, 100.0, 055.0, false);
     }
 }
 
-
-// handle click on card
-//Card* Player::handleClick(const sf::Vector2f& mousePosition) {
-
-//}

@@ -17,18 +17,20 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
     gameStarted = false;
 
 
+    
 
    mainDeck.fillDeck();
    mainDeck.shuffle();
 
-   player1.drawInitialHand(mainDeck, 7, 1);
-   player2.drawInitialHand(mainDeck, 7, 2);
+   player1.drawInitialHand(mainDeck, 7);
+   player2.drawInitialHand(mainDeck, 7);
+ 
    //player2.drawInitialHand(mainDeck, 7);
 
 
-
+   
     // Set frame rate limit
-    _window.setFramerateLimit(60);
+    _window.setFramerateLimit(15);
 
     // Load textures
     backgroundTexture.loadFromFile(BACKGROUND_IMAGE_PATH);
@@ -59,6 +61,8 @@ Game::~Game() {
 }
 
 void Game::playerVsPlayerGame() {
+    nextTurn();
+  
     // Implement player vs. player game logic
 }
 
@@ -71,7 +75,7 @@ void Game::handleEvents() {
         else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
             if (inInitialScreen) {
                 if (playButtonSprite.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
-                    inInitialScreen = false;
+                    inInitialScreen = false; 
                     inMainMenu = true;
                 }
             }
@@ -80,22 +84,39 @@ void Game::handleEvents() {
                     inMainMenu = false;
                     inPlayerVsPlayerScreen = true;
                     playerVsPlayerGame();
+                    handleEventsPlayerVsPlayer(event);
                     gameStarted = true;
                 }
-                else if (inPlayerVsPlayerScreen) {
-                    // Handle in-game events for player vs. player
+                else if (inPlayerVsPCScreen) {
+                    
+                    // Handle in-game events for player vs. PC
                 }
             }
+      // Llama a la función específica para el modo jugador contra jugad
         }
     }
 }
+
+void Game::handleEventsPlayerVsPlayer(sf::Event event) {
+    // Handle events specific to Player vs. Player screen
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::Space) {
+            // Player 1 takes a card from the main deck
+            std::cout << "Player 1 takes a card from the main deck" << std::endl;
+            player1.drawFromMainDeck(mainDeck);
+        }
+    }
+    // Handle other events as needed for this screen
+}
+
 
 void Game::InitializeGame() {
     // Initialize the game state
 }
 
-void Game::HandlePlayerAction() {
-    // Implement player action handling
+void Game::nextTurn() {
+
+
 }
 
 void Game::render() {
@@ -111,8 +132,11 @@ void Game::render() {
     }
     else if (inPlayerVsPlayerScreen) {
         // Display player's hand
-        player1.displayHand(_window, 1);
-        player2.displayHand(_window, 2);
+        player1.displayHand(_window, 1); // window, playerNumber1
+        player2.displayHand(_window, 2); // window, playerNumber2
+
+        //mainDeck.displayMainDeck(_window);
+        playerVsPlayerGame();
         //player2.displayHand(_window, 0, 600);
         
    
@@ -131,7 +155,8 @@ void Game::run() {
     while (_window.isOpen()) {
         handleEvents();
         render();
-        HandlePlayerAction();
+
+       
     }
 }
 
