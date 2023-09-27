@@ -18,6 +18,8 @@ public:
     void handleDeck(sf::RenderWindow& window, bool isControllable, int& pointerToTurn, Deck& playerHand, Deck& opponentHand, Deck& stashDeck, Deck& mainDeck);
     void displayDeck(sf::RenderWindow& window, float xOffset, float yOffset);
     void fillDeck();
+    void drawStash(sf::RenderWindow& window, float xOffset, float yOffset);
+    void removeCard(const Card& card);
 
 private:
     sf::Clock clickCooldown;

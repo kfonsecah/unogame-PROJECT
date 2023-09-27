@@ -18,15 +18,7 @@ void Player::drawInitialHand(Deck& mainDeck, int numCards) {
 
 // Play a card from the player's hand
 void Player::playCard(Card card) {
-    // Implement your game's card-playing logic here
-    // You would typically check if the card is valid to play and then remove it from the player's hand
-    // For example:
-    // if (isValidMove(card)) {
-    //     hand.removeCard(card);
-    //     // Process the card's effect and update the game state
-    //     return true; // Return true if the card was successfully played
-    // }
-    // return false; // Return false if the card cannot be played
+
 }
 
 // Draw a card from the main deck

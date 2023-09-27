@@ -1,11 +1,12 @@
 #include "Game.h"
+#include <iostream>
 
 #define BACKGROUND_IMAGE_PATH "./resources/background1.jpg"
 #define BUTTON_PLAY_PATH "./resources/buttonPlay.png"
 #define BUTTON_PLAYER_VS_PLAYER_PATH "./resources/buttonPlayerVsPlayer.png"
 #define BUTTON_PLAYER_VS_PC_PATH "./resources/buttonPlayerVsPC.png"
 #define BUTTON_START_GAME_PATH "./resources/start.png"
-
+#define UNO_BUTTON_IMAGE_PATH "./resources/UnoButton.png"
 
 
 Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
@@ -32,23 +33,13 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
     playerVsPlayerButtonTexture.loadFromFile(BUTTON_PLAYER_VS_PLAYER_PATH);
     playerVsPcButtonTexture.loadFromFile(BUTTON_PLAYER_VS_PC_PATH);
     startButtonTexture.loadFromFile(BUTTON_START_GAME_PATH);
+    unoButtonTexture.loadFromFile(UNO_BUTTON_IMAGE_PATH);
 
     // Configure sprites
     backgroundSprite.setTexture(backgroundTexture);
 
-    sf::RectangleShape eatButton(sf::Vector2f(150, 50)); // Button size of 150x50
-    eatButton.setPosition(500, 500); // Position it at (500, 500) for example
-    eatButton.setFillColor(sf::Color::Green); // Set its color to green
-
-    sf::Font font;
-    font.loadFromFile("path_to_your_font.ttf"); // Load a font
-
-    sf::Text buttonText;
-    buttonText.setFont(font);
-    buttonText.setString("Eat Card");
-    buttonText.setCharacterSize(24);
-    buttonText.setFillColor(sf::Color::White);
-    buttonText.setPosition(505, 510);
+    unoButtonSprite.setTexture(unoButtonTexture);
+    unoButtonSprite.setPosition(300, 100);
 
     playButtonSprite.setTexture(playButtonTexture);
     playButtonSprite.setPosition(580, 360);
@@ -81,6 +72,7 @@ void Game::handleEvents() {
                 if (playButtonSprite.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
                     inInitialScreen = false; 
                     inMainMenu = true;
+                   
                 }
             }
             else if (inMainMenu) {
@@ -128,14 +120,16 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
 
     // Create the button
     sf::Texture buttonTexture;
-    if (!buttonTexture.loadFromFile("C:\\Users\\Kendall Fonseca\\Desktop\\Progra\\unogame-CPP\\resources\\EatButton.png")) {
+    buttonTexture.loadFromFile("resources\\EatButton.png");
         // Handle the case where loading the image failed
         // You can add error handling here
-    }
+    
 
     sf::Sprite eatButton(buttonTexture);
     eatButton.setPosition(100, 250);
     eatButton.setScale(0.3f, 0.3f);
+
+  
 
     // START THE GAME LOOP
     while (window.isOpen() && !gameOver) {
@@ -154,9 +148,11 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
                         Card drawnCard = mainDeck.drawCard();
                         if (turn % 2 == 0) {
                             entity.addCardToHand(drawnCard);
+                            
                         }
                         else {
                             player.addCardToHand(drawnCard);
+
                         }
                     }
                 }
@@ -211,9 +207,10 @@ void Game::render() {
     else if (inPlayerVsPlayerScreen) {
 		// Handle in-game rendering for player vs. player
 		_window.draw(backgroundSprite);
-        HandleInGamePVP(_window);
         
-        _window.draw(backgroundSprite);
+        HandleInGamePVP(_window);
+        stashDeck.drawStash(_window, 200, 200);
+
 
     }
     else if (inPlayerVsPCScreen) {
@@ -225,7 +222,7 @@ void Game::render() {
 
 void Game::run() {
     InitializeGame();
-
+    
     while (_window.isOpen()) {
         handleEvents();
         render();

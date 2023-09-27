@@ -191,50 +191,58 @@ bool Deck::isCardPlayable(const Card& playedCard, const Card& targetCard) {
 }
 
 
+void Deck::removeCard(const Card& cardToRemove) {
+    cards.erase(std::remove_if(cards.begin(), cards.end(),
+        [&cardToRemove](const Card& card) {
+            return card.getColor() == cardToRemove.getColor() &&
+                card.getNumber() == cardToRemove.getNumber() &&
+                card.getType() == cardToRemove.getType();
+        }),
+        cards.end());
+}
+
 // EXECUTE AN ACTION BASED ON THE CARD'S PARAMETERS
 void Deck::cardAction(Card& card, Deck& playerHand, Deck& opponentHand, Deck& stashDeck, Deck& mainDeck, int& pointerToTurn) {
-    // Get the card's color and number
-    std::string cardColor = card.getColor();
-    int cardNumber = card.getNumber();
+    if (isCardPlayable(card, stashDeck.getTopCard())) {
+        std::cout << "Card is playable!!!!" << std::endl;
 
-    // Check if the card is special (e.g., Reverse, Plus2, Skip)
-    bool specialCard = card.isSpecial();
+        // Add the card to the stash
+        stashDeck.addCard(card);
 
-    // Getting the top card
-    Card topCard = stashDeck.getTopCard();
+        // Remove the card from the player's hand
+        playerHand.removeCard(card);
 
-    if (isCardPlayable(card, topCard)) {
-        std::cout << "Card is playable!!" << std::endl;
-        if (specialCard) {
-            // Handle special card actions
-            if (cardColor == "red") {
-                std::cout << "Red Card Action: No special action, just change the color to red" << std::endl;
-            }
-            // ... Handle other special card actions ...
+        // Implement Uno rules
+        switch (card.getNumber()) {
+        case -1: // Reverse
+            // Assuming you have a way to reverse turn order, implement it here
+            break;
+        case -2: // Plus2
+            opponentHand.addCard(mainDeck.drawCard());
+            opponentHand.addCard(mainDeck.drawCard());
+            break;
+        case -3: // Skip
+            // Skip opponent's turn. If you're increasing pointerToTurn at the end, 
+            // you might want to increase it by 2 here to skip the opponent's turn.
+            pointerToTurn += 2;
+            return;
+        case -4: // Wild Plus4
+            opponentHand.addCard(mainDeck.drawCard());
+            opponentHand.addCard(mainDeck.drawCard());
+            opponentHand.addCard(mainDeck.drawCard());
+            opponentHand.addCard(mainDeck.drawCard());
+            // You might want to add color selection logic for Wild cards
+            break;
+        case -5: // Rumble (I assume this is Wild)
+            // You might want to add color selection logic for Wild cards
+            break;
+        default:
+            break;
         }
-        else {
-            // Handle regular number card actions
-            if (cardColor == "red") {
-                std::cout << "Red Card Action: Common action for all red cards" << std::endl;
-            }
-            // ... Handle other color card actions ...
 
-            // Additional actions based on card number
-            if (cardNumber == 0) {
-                std::cout << "Number 0 Card Action: No special action" << std::endl;
-            }
-            else if (cardNumber >= 1 && cardNumber <= 9) {
-                std::cout << "Number " << cardNumber << " Card Action: No special action" << std::endl;
-            }
-        }
-        // Increment the turn counter only when the card is playable
+        // Increase the turn pointer
         pointerToTurn++;
     }
-    else {
-        std::cout << "You can't play that card" << std::endl;
-    }
-
-    // Perform actions based on color, number, and characteristics
 }
 
 
@@ -257,6 +265,25 @@ void Deck::displayDeck(RenderWindow& window, float xOffset, float yOffset) {
 void Deck::initializeStash(Deck& mainDeck) {
     cards.push_back(mainDeck.drawCard());
     std::cout << "Stash initialized with " << cards[0].getColor() << " " << cards[0].getNumber() << std::endl;
+}
+
+void Deck::drawStash(sf::RenderWindow& window, float xOffset, float yOffset) {
+    // Check if there are cards in the stash
+    if (!cards.empty()) {
+        const float cardSpacing = 0.0f;
+        int lastCardIndex = cards.size() - 1; // Index of the last card in the stash
+
+        // Get the last card in the stash
+        Card& lastCard = cards[lastCardIndex];
+
+        // Create a sprite for the last card and set its texture and position
+        Sprite lastCardSprite;
+        lastCardSprite.setTexture(lastCard.getTexture());
+        lastCardSprite.setPosition(xOffset, yOffset);
+
+        // Draw the last card sprite
+        window.draw(lastCardSprite);
+    }
 }
 
 

@@ -12,8 +12,8 @@ public:
 
 private:
     sf::RenderWindow _window;
-    sf::Texture backgroundTexture, playButtonTexture, playerVsPlayerButtonTexture, playerVsPcButtonTexture, startButtonTexture;
-    sf::Sprite backgroundSprite, playButtonSprite, playerVsPlayerButtonSprite, playerVsPcButtonSprite, startButtonSprite;
+    sf::Texture backgroundTexture, playButtonTexture, playerVsPlayerButtonTexture, playerVsPcButtonTexture, startButtonTexture, unoButtonTexture;
+    sf::Sprite backgroundSprite, playButtonSprite, playerVsPlayerButtonSprite, playerVsPcButtonSprite, startButtonSprite, unoButtonSprite;
     bool inInitialScreen, inMainMenu, inPlayerVsPlayerScreen, inPlayerVsPCScreen, gameStarted;
     Player player1, player2;
     Deck mainDeck, deck, stashDeck;
