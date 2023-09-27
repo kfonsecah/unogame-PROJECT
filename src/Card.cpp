@@ -1,37 +1,30 @@
 #include "Card.h"
-#include <SFML/Graphics.hpp>
-#include <string>
 #include <iostream>
 
 using namespace sf;
 
 Card::Card(const std::string& color, int number) : color(color), number(number) {
-    switch (number) {
-    case -1: type = "Reverse"; break;
-    case -2: type = "draw2"; break;
-    case -3: type = "Skip"; break;
-    case -4: type = "Plus"; break;
-    case -5: type = "Rumble"; break;
-    default: type = "Common"; break;
-    }
+    type = determineType(number);
     setCardTexture();
 }
 
+std::string Card::determineType(int number) const {
+    switch (number) {
+    case -1: return "Reverse";
+    case -2: return "draw2";
+    case -3: return "Skip";
+    case -4: return "Plus";
+    case -5: return "Rumble";
+    default: return "Common";
+    }
+}
+
 void Card::setCardTexture() {
-    std::string filename = "resources/cards/";
-    filename += color;
-    if (type != "Common") {
-        filename += type;
-    }
-    else {
-        filename += std::to_string(number);
-    }
+    std::string filename = "resources/cards/" + color;
+    filename += (type == "Common") ? std::to_string(number) : type;
     filename += ".png";
 
-    if (texture.loadFromFile(filename)) {
-        std::cout << "Loaded texture from directory: " << filename << std::endl;
-    }
-    else {
+    if (!texture.loadFromFile(filename)) {
         std::cout << "Failed to load image \"" << filename << "\". Reason: Unable to open file" << std::endl;
     }
 }
@@ -41,7 +34,13 @@ sf::Texture& Card::getTexture() {
 }
 
 sf::Texture& Card::getBackTexture() {
-    backTexture.loadFromFile("resources/cards/EMPTYReverse.png");
+    static bool isBackTextureLoaded = false;
+    if (!isBackTextureLoaded) {
+        if (!backTexture.loadFromFile("resources/cards/EMPTYReverse.png")) {
+            std::cout << "Failed to load back texture. Reason: Unable to open file" << std::endl;
+        }
+        isBackTextureLoaded = true;
+    }
     return backTexture;
 }
 
@@ -59,19 +58,15 @@ std::string Card::getType() const {
 
 Card& Card::operator=(const Card& other) {
     if (this != &other) {
-        this->color = other.color;
-        this->number = other.number;
-        this->texture = other.texture;
+        color = other.color;
+        number = other.number;
+        texture = other.texture;
     }
     return *this;
 }
 
 sf::Vector2u Card::getSize() const {
     return texture.getSize();
-}
-
-void Card::action() {
-    // Perform the card's action
 }
 
 bool Card::isSpecial() const {

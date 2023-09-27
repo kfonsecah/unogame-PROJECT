@@ -19,7 +19,9 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
     currentTurn = 0;
 
 
-
+    mainDeck.fillDeck();
+    mainDeck.shuffle();
+    stashDeck.initializeStash(mainDeck);
    
     // Set frame rate limit
     _window.setFramerateLimit(15);
@@ -33,6 +35,20 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
 
     // Configure sprites
     backgroundSprite.setTexture(backgroundTexture);
+
+    sf::RectangleShape eatButton(sf::Vector2f(150, 50)); // Button size of 150x50
+    eatButton.setPosition(500, 500); // Position it at (500, 500) for example
+    eatButton.setFillColor(sf::Color::Green); // Set its color to green
+
+    sf::Font font;
+    font.loadFromFile("path_to_your_font.ttf"); // Load a font
+
+    sf::Text buttonText;
+    buttonText.setFont(font);
+    buttonText.setString("Eat Card");
+    buttonText.setCharacterSize(24);
+    buttonText.setFillColor(sf::Color::White);
+    buttonText.setPosition(505, 510);
 
     playButtonSprite.setTexture(playButtonTexture);
     playButtonSprite.setPosition(580, 360);
@@ -102,14 +118,6 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
     // CREATE A BOOLEAN VARIABLE TO KEEP TRACK OF THE GAME OVER STATE
     bool gameOver = false;
 
-    // CREATE A DECK OBJECT AND FILL IT WITH CARDS AND SHUFFLE IT
-    Deck mainDeck;
-    mainDeck.fillDeck();
-    mainDeck.shuffle();
-
-    Deck stashDeck;
-
-
     // CREATE A PLAYER OBJECT AND AN ENTITY OBJECT IN ORDER TO PLAY THE GAME
     Player player;
     Player entity;
@@ -118,29 +126,60 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
     player.drawInitialHand(mainDeck, 7);
     entity.drawInitialHand(mainDeck, 7);
 
+    // Create the button
+    sf::Texture buttonTexture;
+    if (!buttonTexture.loadFromFile("C:\\Users\\Kendall Fonseca\\Desktop\\Progra\\unogame-CPP\\resources\\EatButton.png")) {
+        // Handle the case where loading the image failed
+        // You can add error handling here
+    }
+
+    sf::Sprite eatButton(buttonTexture);
+    eatButton.setPosition(100, 250);
+    eatButton.setScale(0.3f, 0.3f);
+
     // START THE GAME LOOP
     while (window.isOpen() && !gameOver) {
-        //std::cout << "Current turn: " << turn << std::endl;	
+        // Event handling
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+
+            // Button click detection
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    if (eatButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+                        // The button was clicked, eat (draw) a card from the main deck
+                        Card drawnCard = mainDeck.drawCard();
+                        if (turn % 2 == 0) {
+                            entity.addCardToHand(drawnCard);
+                        }
+                        else {
+                            player.addCardToHand(drawnCard);
+                        }
+                    }
+                }
+            }
+        }
+
         // CHECK IF THE PLAYER'S TURN IS OVER
         if (turn % 2 == 0) {
             window.clear();
-            _window.draw(backgroundSprite);
-            
-            player.handleHand(window, false, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck); // DISPLAY THE PLAYER'S HAND AS NOT CONTROLLABLE (OFFSET BY 22.0, 7.0) ->AND SCALE BY 0.5 BY DEFAULT<-
-            entity.handleHand(window, true, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck); // DISPLAY THE ENTITY'S HAND AS CONTROLLABLE
-
-
+            window.draw(backgroundSprite);
+            player.handleHand(window, false, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck);
+            entity.handleHand(window, true, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck);
         }
         else {
             window.clear();
-            _window.draw(backgroundSprite);
-           
-            player.handleHand(window, true, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck); // DISPLAY THE PLAYER'S HAND AS CONTROLLABLE
-            entity.handleHand(window, false, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck); // DISPLAY THE ENTITY'S HAND AS NOT CONTROLLABLE (OFFSET BY 22.0, 7.0) ->AND SCALE BY 0.5 BY DEFAULT<-
+            window.draw(backgroundSprite);
+            player.handleHand(window, true, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck);
+            entity.handleHand(window, false, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck);
         }
 
-        // DISPLAY THE MAIN DECK AS DEBUG 
-        //mainDeck.displayDeck(window, 22.0, 90.0); // Display the main deck
+        // Draw the button
+        window.draw(eatButton);
+        
 
         // DISPLAY THE MAIN WINDOW
         window.display();
@@ -150,9 +189,12 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
             gameOver = true;
         }
     }
+
     // GAME OVER SCREEN
     window.clear();
 }
+
+
 
 
 void Game::render() {

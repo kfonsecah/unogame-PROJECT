@@ -108,23 +108,21 @@ void Deck::handleDeck(RenderWindow& window, bool isControllable, int& pointerToT
     for (int cardIndex = 0; cardIndex < cards.size(); cardIndex++) {
         Card& card = cards[cardIndex];
         Sprite cardSprite;
-        float cardSpacing;;
+        float cardSpacing;
 
 
 
         // SET THE CARD'S TEXTURE AND POSITION IF THE DECK IS CONTROLLABLE
         // ELSE SET THE CARD'S BACK TEXTURE, SCALE IT AND SET ITS POSITION IN ORDER TO DISPLAY IT ON THE UPPER PART OF THE WINDOW
         if (isControllable) {
-
             cardSpacing = 56.0f;
             cardSprite.setTexture(card.getTexture());
             cardSprite.setScale(0.097f, 0.097f);
         }
         else {
-
             cardSpacing = 29.0f;
             cardSprite.setTexture(card.getBackTexture()); // SET THE CARD'S BACK TEXTURE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            cardSprite.setScale(0.099f, 0.099f);
+            cardSprite.setScale(0.097f, 0.097f);
         }
 
         // SET THE CARD'S POSITION
@@ -164,15 +162,80 @@ void Deck::handleDeck(RenderWindow& window, bool isControllable, int& pointerToT
         // MAKE THE GAME WAIT FOR 1 SECOND
 
         sf::sleep(sf::seconds(1.0f));
-        // PERFORM AN ACTION BASED ON THE CARD'S NUMBER
+        // PERFORM AN ACTION BASED ON THE CARD'S NUMBER, COLOR, AND CHARACTERISTICS
 
-
-
-        // INCREASES THE TURN COUNTER
-        pointerToTurn = pointerToTurn + 1;
+        cardAction(cards[clickedCardIndex], playerHand, opponentHand, stashDeck, mainDeck, pointerToTurn);
     }
 }
 
+
+
+
+Card Deck::getTopCard() {
+    if (!cards.empty()) {
+        std::cout << "Top card is of stash is: " << cards.back().getColor() << " " << cards.back().getNumber() << std::endl;
+        return cards.back();
+
+    }
+    else {
+        // Return a special "EMPTY" card or handle this case as needed
+        return Card("null", -404);
+    }
+}
+
+bool Deck::isCardPlayable(const Card& playedCard, const Card& targetCard) {
+    // Check if the color or number matches
+    std::cout << "Played Card: " << playedCard.getColor() << " " << playedCard.getNumber() << std::endl;
+    std::cout << "Target Card: " << targetCard.getColor() << " " << targetCard.getNumber() << std::endl;
+    return (playedCard.getColor() == targetCard.getColor() || playedCard.getNumber() == targetCard.getNumber());
+}
+
+
+// EXECUTE AN ACTION BASED ON THE CARD'S PARAMETERS
+void Deck::cardAction(Card& card, Deck& playerHand, Deck& opponentHand, Deck& stashDeck, Deck& mainDeck, int& pointerToTurn) {
+    // Get the card's color and number
+    std::string cardColor = card.getColor();
+    int cardNumber = card.getNumber();
+
+    // Check if the card is special (e.g., Reverse, Plus2, Skip)
+    bool specialCard = card.isSpecial();
+
+    // Getting the top card
+    Card topCard = stashDeck.getTopCard();
+
+    if (isCardPlayable(card, topCard)) {
+        std::cout << "Card is playable!!" << std::endl;
+        if (specialCard) {
+            // Handle special card actions
+            if (cardColor == "red") {
+                std::cout << "Red Card Action: No special action, just change the color to red" << std::endl;
+            }
+            // ... Handle other special card actions ...
+        }
+        else {
+            // Handle regular number card actions
+            if (cardColor == "red") {
+                std::cout << "Red Card Action: Common action for all red cards" << std::endl;
+            }
+            // ... Handle other color card actions ...
+
+            // Additional actions based on card number
+            if (cardNumber == 0) {
+                std::cout << "Number 0 Card Action: No special action" << std::endl;
+            }
+            else if (cardNumber >= 1 && cardNumber <= 9) {
+                std::cout << "Number " << cardNumber << " Card Action: No special action" << std::endl;
+            }
+        }
+        // Increment the turn counter only when the card is playable
+        pointerToTurn++;
+    }
+    else {
+        std::cout << "You can't play that card" << std::endl;
+    }
+
+    // Perform actions based on color, number, and characteristics
+}
 
 
 void Deck::displayDeck(RenderWindow& window, float xOffset, float yOffset) {
@@ -190,8 +253,16 @@ void Deck::displayDeck(RenderWindow& window, float xOffset, float yOffset) {
         xOffset += cardSpacing;
     }
 }
+// FILL THE STASH WITH ONE CARD FROM THE MAIN DECK
+void Deck::initializeStash(Deck& mainDeck) {
+    cards.push_back(mainDeck.drawCard());
+    std::cout << "Stash initialized with " << cards[0].getColor() << " " << cards[0].getNumber() << std::endl;
+}
+
+
+
 void Deck::addCard(const Card& card) {
-    cards.push_back(card);
+    cards.push_back(card);  // Assuming 'cards' is a std::vector<Card> or similar collection
 }
 
 size_t Deck::getSize() const {

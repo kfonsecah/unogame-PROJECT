@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <iostream>
+#include <vector>
 
 // Constructor
 Player::Player() : points(0) {
@@ -62,5 +63,10 @@ void Player::handleHand(sf::RenderWindow& window, bool isControllable, int& poin
 Deck& Player::getHand() {
     return hand;
 }
+
+void Player::addCardToHand(const Card& card) {
+    hand.addCard(card);
+}
+
 
 
