@@ -1,4 +1,7 @@
 #include "Card.h"
+#include <SFML/Graphics.hpp>
+#include <string>
+#include <iostream>
 
 using namespace sf;
 
@@ -6,35 +9,38 @@ using namespace sf;
 Card::Card(const std::string& color, int number) : color(color), number(number) {
     // Initialize other members as needed
     switch (number) {
-    case -1: type = "reverse"; break;
+    case -1: type = "Reverse"; break;
     case -2: type = "draw2"; break;
-    case -3: type = "skip"; break;
+    case -3: type = "Skip"; break;
     case -4: type = "Plus"; break;
     case -5: type = "Rumble"; break;
     default: type = "Common"; break;
     }
-
     setTexture(); // Set the card's texture during construction
 }
+
+// Constructor to initialize a card with a given color and special type
+
 
 // Function to set the card's texture based on its color and number
 void Card::setTexture() {
     // Construct the texture filename based on color and number
     std::string filename = "resources/cards/";
     filename += color;
-
+    //std::cout<<type<<std::endl; DEBUG
     if (type != "Common") {
         filename += type;
     }
+
     else {
         filename += std::to_string(number);
     }
 
     filename += ".png";
-
+    //std::cout << filename << std::endl; DEBUG
     // Load and assign the texture
     if (texture.loadFromFile(filename)) {
-        std::cout << "Loaded texture from: " << filename << std::endl;
+        std::cout << "Loaded texture from directory: " << filename << std::endl;
     }
     else {
         std::cout << "Failed to load image \"" << filename << "\". Reason: Unable to open file" << std::endl;
@@ -56,6 +62,10 @@ std::string Card::getColor() const {
     return color;
 }
 
+std::string Card::getType() const {
+    return type;
+}
+
 // Copy assignment operator implementation
 Card& Card::operator=(const Card& other) {
     if (this != &other) {
@@ -68,31 +78,17 @@ Card& Card::operator=(const Card& other) {
     return *this;
 }
 
-void Card::setSprite() {
-    // Construye el nombre del archivo de textura como lo hacías antes
-    std::string filename = "resources/cards/";
-    filename += color;
-
-    if (type != "Common") {
-        filename += type;
-    }
-    else {
-        filename += std::to_string(number);
-    }
-
-    filename += ".png";
-
-    // Crea una textura y carga la imagen en ella
-    sf::Texture texture;
-    if (texture.loadFromFile(filename)) {
-        std::cout << "Loaded texture from: " << filename << std::endl;
-        sprite.setTexture(texture); // Configura la textura en el sprite
-    }
-    else {
-        std::cout << "Failed to load image \"" << filename << "\". Reason: Unable to open file" << std::endl;
-    }
+sf::Vector2u Card::getSize() const {
+    return texture.getSize();
 }
-// Implementación del método getSprite
-sf::Sprite& Card::getSprite() {
-    return sprite;
+
+// Function to perform a card action
+void Card::action() {
+    // Perform the card's action
+    // ...
+}
+
+// Function to check if the card is a special card
+bool Card::isSpecial() const {
+    return number < 0;
 }

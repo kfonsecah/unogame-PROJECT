@@ -40,7 +40,8 @@ private:
 
     Player player1;
     Player player2;
-
+    //Player player2;
+    
     Deck mainDeck;
 
 

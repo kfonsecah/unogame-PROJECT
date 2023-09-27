@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
-#include "Card.h" // Include your Card class header
-#include "Deck.h" // Include your Deck class header
+#include "Deck.h"
+#include "Card.h"
 #include <iostream>
 #include <random>
 using namespace sf;
@@ -9,37 +9,38 @@ using namespace sf;
 // DECK CONSTRUCTOR
 
 Deck::Deck() {
+    // Initialize the deck as empty
+    //int totalCards = 0; // INITIALIZE THE TOTAL NUMBER OF CARDS TO 0 (DEBUG)
 
-    
-
+    // No need to fill the deck here; it starts empty
+    // Debug print
+    // std::cout << "Total number of cards: " << totalCards << std::endl;
 }
 
-
-void Deck::initializeDeck() {
+// Fill the deck with cards, including special ones
+void Deck::fillDeck() {
     std::string colors[4] = { "redcard", "bluecard", "yellowcard", "greencard" };
     int totalCards = 0; // INITIALIZE THE TOTAL NUMBER OF CARDS TO 0 (DEBUG)
-    
 
     for (int i = 0; i < 4; i++) {
         for (int number = 0; number <= 10; ++number) {
             if (number == 0) {
                 addCard(colors[i], number, 1); // Add one zero card to the main deck per color
-                totalCards += 1;
             }
             else if (number == 10) {
                 addSpecialCards(colors[i]);
-                totalCards += 2; // INCREMENT THE COUNT BY 2 FOR THE SPECIAL CARDS
+                totalCards += 8; // INCREMENT THE COUNT BY 2 FOR THE SPECIAL CARDS
             }
             else {
                 addCard(colors[i], number, 2); // Add two cards of the same color and number
-                totalCards += 2;
             }
         }
     }
     // Debug print
-    std::cout << "Total number of cards: " << totalCards << std::endl;
+    // std::cout << "Total number of cards: " << totalCards << std::endl;
 }
 
+// Helper function to add cards with the same color and number
 void Deck::addCard(const std::string& color, int number, int count) {
     for (int i = 0; i < count; i++) {
         cards.emplace_back(color, number);
@@ -83,56 +84,64 @@ Card Deck::drawCard() {
     }
 }
 
+// DISPLAY THE ENTIRE DECK ON THE WINDOW AND HANDLE MOUSE INTERACTION
+void Deck::displayDeck(RenderWindow& window) {
+    // GET THE WIDTH AND HEIGHT OF THE CARD
+    const float cardWidth = cards[0].getTexture().getSize().x;
+    const float cardHeight = cards[0].getTexture().getSize().y;
 
-
-
-// DISPLAY THE ENTIRE DECK ON THE WINDOW
-void Deck::displayDeck(sf::RenderWindow& window) {
-    const float cardWidth = cards[0].getSprite().getLocalBounds().width;
-    const float cardHeight = cards[0].getSprite().getLocalBounds().height;
+    // SET THE OFFSETS FOR THE FIRST CARD
     float yOffset = 7.0;
     float leftXOffset = 20.0;
     const float cardSpacing = 90.0f;
 
-    for (Card& card : cards) {
-        sf::Sprite& cardSprite = card.getSprite(); // Obtener el sprite de la carta
+    // Initialize a variable to keep track of the clicked card index
+    int clickedCardIndex = -1;
 
-        cardSprite.setPosition(leftXOffset, yOffset);
-        cardSprite.setScale(0.13f, 0.13f);
-        window.draw(cardSprite);
-
-        // Verificar si se ha hecho clic en la carta
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-            sf::FloatRect cardBounds = cardSprite.getGlobalBounds();
-
-            if (cardBounds.contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
-                // Mostrar un mensaje en la consola indicando a qué carta le hiciste clic
-                std::cout << "Clickeaste en la carta de color " << card.getColor() << " y número " << card.getNumber() << std::endl;
-            }
-        }
-
-        leftXOffset += cardSpacing;
-    }
-}
-
-void Deck::displayDeck(sf::RenderWindow& window, float Xdelta, float Ydelta) {
-
-    const float cardWidth = cards[0].getTexture().getSize().x;
-    const float cardHeight = cards[0].getTexture().getSize().y;
-    float yOffset = 7.0+Ydelta;
-    float leftXOffset = 20.0+Xdelta;
-    const float cardSpacing = 90.0f;
-
-    for (Card& card : cards) {
+    // LOOP THROUGH THE CARDS IN THE DECK
+    for (int cardIndex = 0; cardIndex < cards.size(); cardIndex++) {
+        Card& card = cards[cardIndex];
         sf::Sprite cardSprite;
         cardSprite.setTexture(card.getTexture());
         cardSprite.setPosition(leftXOffset, yOffset);
         cardSprite.setScale(0.13f, 0.13f);
+
+        // CHECK IF THE MOUSE IS OVER THE CARD
+        sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+        sf::FloatRect cardBounds = cardSprite.getGlobalBounds();
+        bool isMouseOverCard = cardBounds.contains(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y));
+
+        if (isMouseOverCard) {
+            // Handle the case where the mouse is over this card
+            // For example, you can highlight the card or trigger an action
+            // when the player clicks on it.
+
+            // Example action: Highlight the card
+            cardSprite.setColor(sf::Color(255, 255, 255, 200));
+
+            if (Mouse::isButtonPressed(Mouse::Left)) {
+                // Set the clicked card index to the current card index
+                clickedCardIndex = cardIndex;
+            }
+        }
+        else {
+            // Reset the card's color if the mouse is not over it
+            cardSprite.setColor(Color(255, 255, 255, 255));
+        }
+
         window.draw(cardSprite);
         leftXOffset += cardSpacing;
     }
+
+    // Check if a card was clicked
+    if (clickedCardIndex != -1) {
+        // Perform an action with the clicked card using clickedCardIndex
+        std::cout << "Clicked on card " << clickedCardIndex << "!" << std::endl;
+        // You can also use clickedCardIndex to access the specific card in your collection
+        // cards[clickedCardIndex].performAction();
+    }
 }
+
 
 
 void Deck::addCard(const Card& card) {

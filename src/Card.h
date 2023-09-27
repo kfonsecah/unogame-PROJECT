@@ -1,9 +1,6 @@
-#pragma once // Include guard to prevent multiple declarations
+#pragma once
 
 #include <SFML/Graphics.hpp> // Include the SFML library for graphics
-#include <iostream>
-#include <string>
-#include "Card.h"
 
 class Card {
 public:
@@ -25,21 +22,26 @@ public:
     // Function to get the card's color
     std::string getColor() const;
 
+    // Function to get the card's type
+    std::string getType() const;
+
     // Copy assignment operator
     Card& operator=(const Card& other);
-    
 
-    void setSprite();
+    // Function to get the card's size
+    sf::Vector2u Card::getSize() const;
 
-    // Método para obtener el sprite de la carta
-    sf::Sprite& getSprite();
+
+
+    // Function to perform a card action
+    void action();
+
+    bool isSpecial() const;
+
 private:
-
-    sf::Sprite sprite;
-
-
     sf::Texture texture; // Texture for the card
     std::string type;
     std::string color;   // Color of the card
+    sf::Sprite sprite;
     int number;          // Number of the card
 };

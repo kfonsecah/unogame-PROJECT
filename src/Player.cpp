@@ -3,26 +3,38 @@
 
 // Constructor
 Player::Player() : points(0) {
-    // Optionally initialize the player's hand
+    // Initialize the player's hand (optional)
 }
 
 // Draw initial cards from the main deck
-void Player::drawInitialHand(Deck& mainDeck, int numCards) {
+void Player::drawInitialHand(Deck& mainDeck, int numCards, int playerNumber) {
     for (int i = 0; i < numCards; ++i) {
         Card card = mainDeck.drawCard();
-        hand.addCard(card);
+        if (playerNumber == 1) {
+            hand1.addCard(card);
+        }
+        else if (playerNumber == 2) {
+            hand2.addCard(card);
+        }
     }
 }
 
-// Play a card from the player's hand
-void Player::playCard(Card card) {
-
+void Player::playCard(Card card, int playerNumber) {
+    // Implementa la lógica para jugar una carta de la mano correspondiente al jugador
+    if (playerNumber == 1) {
+        // Lógica para el jugador 1
+    }
+    else if (playerNumber == 2) {
+        // Lógica para el jugador 2
+    }
 }
+
+
 
 // Draw a card from the main deck
 void Player::drawCard(Deck& mainDeck) {
     Card card = mainDeck.drawCard();
-    hand.addCard(card);
+    hand1.addCard(card);
 }
 
 // Get the player's points
@@ -36,22 +48,30 @@ void Player::addToPoints(int pointsToAdd) {
 }
 
 // Get the size of the player's hand
-int Player::getHandSize() const {
-    return static_cast<int>(hand.getSize());
+int Player::getHandSize(int playerNumber) const {
+    if (playerNumber == 1) {
+        return static_cast<int>(hand1.getSize());
+    }
+    else if (playerNumber == 2) {
+        return static_cast<int>(hand2.getSize());
+    }
+    return 0; // Maneja el caso cuando se proporciona un número de jugador inválido
 }
-
 
 
 // Display the player's hand on the screen
-void Player::displayHand(sf::RenderWindow& window) {
-
-    hand.displayDeck(window);
-    
-
+void Player::displayHand(sf::RenderWindow& window, int playerNumber) {
+    // Implementa la lógica para mostrar la mano del jugador correspondiente en la ventana
+    if (playerNumber == 1) {
+        hand1.displayDeck(window);
+    }
+    else if (playerNumber == 2) {
+        hand2.displayDeck(window);
+    }
 }
 
-void Player::displayHand(sf::RenderWindow& window, float Xdelta, float Ydelta) {
 
-	hand.displayDeck(window, Xdelta, Ydelta);
-}
+// handle click on card
+//Card* Player::handleClick(const sf::Vector2f& mousePosition) {
 
+//}

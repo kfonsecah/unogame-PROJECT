@@ -18,11 +18,12 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
 
 
 
-   mainDeck.initializeDeck();
+   mainDeck.fillDeck();
    mainDeck.shuffle();
 
-   player1.drawInitialHand(mainDeck, 7);
-   player2.drawInitialHand(mainDeck, 7);
+   player1.drawInitialHand(mainDeck, 7, 1);
+   player2.drawInitialHand(mainDeck, 7, 2);
+   //player2.drawInitialHand(mainDeck, 7);
 
 
 
@@ -110,10 +111,11 @@ void Game::render() {
     }
     else if (inPlayerVsPlayerScreen) {
         // Display player's hand
-        player1.displayHand(_window);
-        player2.displayHand(_window, 0, 600);
+        player1.displayHand(_window, 1);
+        player2.displayHand(_window, 2);
+        //player2.displayHand(_window, 0, 600);
         
-       
+   
 
     }
     else if (inPlayerVsPCScreen) {
