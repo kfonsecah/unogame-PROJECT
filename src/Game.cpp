@@ -104,6 +104,7 @@ void Game::nextTurn() {
 
 }
 void Game::HandleInGamePVP(sf::RenderWindow& window) {
+    
     // CREATE A TURN VARIABLE TO KEEP TRACK OF THE CURRENT TURN
     int turn = 1;
 
@@ -175,7 +176,9 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
 
         // Draw the button
         window.draw(eatButton);
-        
+
+        stashDeck.displayDeck(window, 640.0, 360.0); // Display the stash deck
+    
 
         // DISPLAY THE MAIN WINDOW
         window.display();
@@ -209,7 +212,8 @@ void Game::render() {
 		_window.draw(backgroundSprite);
         
         HandleInGamePVP(_window);
-        stashDeck.drawStash(_window, 200, 200);
+        
+        _window.display();
 
 
     }

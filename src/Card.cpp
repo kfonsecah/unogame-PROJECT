@@ -48,6 +48,8 @@ int Card::getNumber() const {
     return number;
 }
 
+
+
 std::string Card::getColor() const {
     return color;
 }
@@ -72,3 +74,8 @@ sf::Vector2u Card::getSize() const {
 bool Card::isSpecial() const {
     return number < 0;
 }
+
+void Card::setColor(const std::string& newColor) {
+    color = newColor;
+}
+

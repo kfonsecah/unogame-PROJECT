@@ -14,6 +14,7 @@ public:
     sf::Texture& getBackTexture();
     bool isSpecial() const;
     std::string Card::determineType(int number) const;
+    void setColor(const std::string& color);
 
 private:
     sf::Texture texture, backTexture;

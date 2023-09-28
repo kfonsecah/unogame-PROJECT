@@ -20,6 +20,7 @@ public:
     void fillDeck();
     void drawStash(sf::RenderWindow& window, float xOffset, float yOffset);
     void removeCard(const Card& card);
+    std::string getRandomColor();
 
 private:
     sf::Clock clickCooldown;
