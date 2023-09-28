@@ -1,14 +1,6 @@
 #include "Game.h"
 #include <iostream>
 
-#define BACKGROUND_IMAGE_PATH "./resources/background1.jpg"
-#define BUTTON_PLAY_PATH "./resources/buttonPlay.png"
-#define BUTTON_PLAYER_VS_PLAYER_PATH "./resources/buttonPlayerVsPlayer.png"
-#define BUTTON_PLAYER_VS_PC_PATH "./resources/buttonPlayerVsPC.png"
-#define BUTTON_START_GAME_PATH "./resources/start.png"
-#define UNO_BUTTON_IMAGE_PATH "./resources/UnoButton.png"
-#define BACKGROUND_IMAGE_PATH2 "./resources/background2.jpg"
-
 
 Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
     // Initialize screen states
@@ -85,12 +77,15 @@ void Game::handleEvents() {
                     inPlayerVsPlayerScreen = true;
                     gameStarted = true;
                 }
-                else if (inPlayerVsPCScreen) {
-                    
-                    // Handle in-game events for player vs. PC
+                else if (playerVsPcButtonSprite.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
+
+                    std::cout<<"Player vs PC"<<std::endl;
+                    inMainMenu = false;
+                    inPlayerVsPCScreen = true;
+                    gameStarted = true;
                 }
+
             }
-      // Llama a la función específica para el modo jugador contra jugad
         }
     }
 }
@@ -198,11 +193,97 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
     window.clear();
 }
 
-void Game::handleInGamePVE(sf::RenderWindow& window) {
-
+void Game::handleEatButton() {
+    int turn = 1;  // Parece que estás reinicializando el turno cada vez que este método es llamado. ¿Estás seguro de que esto es correcto?
+    if (player.getHandSize() < 18) {  // Verificación añadida aquí
+        Card drawnCard = mainDeck.drawCard();
+        if (turn % 2 == 0) {  // Entity's turn
+            
+        }
+        else {  // Player's turn
+            player.addCardToHand(drawnCard);
+        }
+        totalDrawnCards++;
+        turn++;
+    }
 }
 
+void Game::handleInGamePVE(sf::RenderWindow& window) {
+    int turn = 1;
+    bool gameOver = false;
+    int totalDrawnCards = 0;  // Track the total number of drawn cards
 
+ // Renamed to make it clear tis is an AI opponent
+
+    player.drawInitialHand(mainDeck, 7);
+    entity.drawInitialHand(mainDeck, 7);
+
+    sf::Texture buttonTexture;
+    buttonTexture.loadFromFile("resources/EatButton.png");
+    sf::Sprite eatButton(buttonTexture);
+    eatButton.setPosition(040, 550);
+    eatButton.setScale(0.1f, 0.1f);
+
+    while (window.isOpen() && !gameOver) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    if (eatButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+                        handleEatButton();
+                    }
+                }
+            }
+        }
+
+        // Simple AI logic: If the entity has fewer than 3 cards, draw a card
+        if (entity.getHandSize() < 3) {
+            Card drawnCard = mainDeck.drawCard();
+            entity.addCardToHand(drawnCard);
+            turn++;
+        }
+
+        // Check whose turn it is and render accordingly
+        if (turn % 2 == 0) {
+            window.clear();
+            window.draw(backgroundSprite2);
+            player.handleHand(window, false, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck);
+            entity.handleHand(window, true, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck);
+        }
+        else {
+            window.clear();
+            window.draw(backgroundSprite2);
+            player.handleHand(window, true, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck);
+            entity.handleHand(window, false, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck);
+        }
+
+        window.draw(eatButton);
+        stashDeck.displayDeck(window, 640.0, 360.0);
+
+        window.display();
+
+        if (player.getHandSize() == 1) {
+            gameOver = true;
+        }
+    }
+
+    window.clear();
+}
+
+void Game::initializeUnoButton() {
+    unoButtonTexture.loadFromFile("resources\\UnoButton.png");
+    unoButtonSprite.setTexture(unoButtonTexture);
+    unoButtonSprite.setPosition(500, 550);  // Puedes ajustar la posición como prefieras
+    unoButtonSprite.setScale(0.1f, 0.1f);   // Y el tamaño también
+}
+
+bool Game::shouldDisplayUnoButton() {
+    return player.getHandSize() == 1 || entity.getHandSize() == 1;
+}
 
 
 
@@ -224,6 +305,7 @@ void Game::render() {
 
 
         _window.draw(backgroundSprite2);
+        _window.draw(unoButtonSprite);
         
         HandleInGamePVP(_window);
         
@@ -232,7 +314,14 @@ void Game::render() {
 
     }
     else if (inPlayerVsPCScreen) {
-        // Handle in-game rendering for player vs. PC
+
+	   _window.draw(backgroundSprite2);
+		handleInGamePVE(_window);
+
+        if (shouldDisplayUnoButton()) {
+            _window.draw(unoButtonSprite);
+        }
+        
     }
 
     _window.display();

@@ -1,17 +1,15 @@
 #include "Card.h"
 #include <iostream>
 
-using namespace sf;
-
-Card::Card(const std::string& color, int number) : color(color), number(number) {
-    type = determineType(number);
+Card::Card(const std::string& color, int number)
+    : color(color), number(number), type(determineType(number)) {
     setCardTexture();
 }
 
 std::string Card::determineType(int number) const {
     switch (number) {
     case -1: return "Reverse";
-    case -2: return "draw2";
+    case -2: return "Draw2";
     case -3: return "Skip";
     case -4: return "Plus";
     case -5: return "Rumble";
@@ -25,7 +23,7 @@ void Card::setCardTexture() {
     filename += ".png";
 
     if (!texture.loadFromFile(filename)) {
-        std::cout << "Failed to load image \"" << filename << "\". Reason: Unable to open file" << std::endl;
+        std::cout << "Error loading image \"" << filename << "\"" << std::endl;
     }
 }
 

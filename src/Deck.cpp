@@ -1,21 +1,41 @@
+#include <iostream>
+#include <random>
 #include <SFML/Graphics.hpp>
 #include "Deck.h"
 #include "Card.h"
-#include <iostream>
-#include <random>
 
 using namespace sf;
 
-
-
+// Constructor
 Deck::Deck() {
 }
 
-// Fill the deck with cards, including special ones
+// Private Helper Functions
+void Deck::addCard(const std::string& color, int number, int count) {
+    for (int i = 0; i < count; i++) {
+        cards.emplace_back(color, number);
+    }
+}
+
+void Deck::addSpecialCards(const std::string& color) {
+    addCard(color, -1, 2);
+    addCard(color, -2, 2);
+    addCard(color, -3, 2);
+    addCard("special", -4, 1);
+    addCard("special", -5, 1);
+}
+
+std::string Deck::getRandomColor() {
+    std::string colors[4] = { "redcard", "bluecard", "yellowcard", "greencard" };
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 3);
+    return colors[dist(gen)];
+}
+
+// Core Functionalities
 void Deck::fillDeck() {
     std::string colors[4] = { "redcard", "bluecard", "yellowcard", "greencard" };
-
-
     for (int i = 0; i < 4; i++) {
         for (int number = 0; number <= 10; ++number) {
             if (number == 0) {
@@ -31,31 +51,10 @@ void Deck::fillDeck() {
     }
 }
 
-
-void Deck::addCard(const std::string& color, int number, int count) {
-    for (int i = 0; i < count; i++) {
-        cards.emplace_back(color, number);
-    }
-}
-
-// Helper function to add special cards for a color
-void Deck::addSpecialCards(const std::string& color) {
-    addCard(color, -1, 2);
-    addCard(color, -2, 2);
-    addCard(color, -3, 2);
-    addCard("special", -4, 1);
-    addCard("special", -5, 1);
-}
-
 // SHUFFLE THE DECK
 void Deck::shuffle() {
-
     std::random_device rd;
-
-
     std::mt19937 gen(rd());
-
-
     std::shuffle(cards.begin(), cards.end(), gen);
 }
 
@@ -67,8 +66,31 @@ Card Deck::drawCard() {
         return topCard;
     }
     else {
-        return Card("EMPTY", -1); 
+        return Card("EMPTY", -1);
     }
+}
+
+void Deck::addCard(const Card& card) {
+    cards.push_back(card);
+}
+
+void Deck::removeCard(const Card& cardToRemove) {
+    cards.erase(std::remove_if(cards.begin(), cards.end(),
+        [&cardToRemove](const Card& card) {
+            return card.getColor() == cardToRemove.getColor() &&
+                card.getNumber() == cardToRemove.getNumber() &&
+                card.getType() == cardToRemove.getType();
+        }),
+        cards.end());
+}
+
+void Deck::initializeStash(Deck& mainDeck) {
+    Card drawnCard = mainDeck.drawCard();
+    while (drawnCard.isWild()) {
+        drawnCard = mainDeck.drawCard();
+    }
+    std::cout << "Stash initialized with: " << drawnCard.getColor() << " " << drawnCard.getNumber() << std::endl;
+    cards.push_back(drawnCard);
 }
 
 
@@ -150,36 +172,12 @@ bool Deck::isMouseOverCard(Sprite& cardSprite, RenderWindow& window) {
 }
 
 
-Card Deck::getTopCard() {
-    if (!cards.empty()) {
-        std::cout << "Top card is of stash is: " << cards.back().getColor() << " " << cards.back().getNumber() << std::endl;
-        return cards.back();
-
-    }
-    else {
-        // Return a special "EMPTY" card or handle this case as needed
-        return Card("null", -404);
-    }
-}
-
 bool Deck::isCardPlayable(Card& playedCard, Card& targetCard) {
-    //std::cout << "Carta jugada: " << playedCard.getColor() << " " << playedCard.getNumber() << std::endl;
-    //std::cout << "Carta en stash: " << targetCard.getColor() << " " << targetCard.getNumber() << std::endl;
     if (playedCard.isWild()) return true;
     if (playedCard.isSpecial()) return playedCard.getColor() == targetCard.getColor();
     else {
         return (playedCard.getColor() == targetCard.getColor() || playedCard.getNumber() == targetCard.getNumber());
     }
-}
-
-void Deck::removeCard(const Card& cardToRemove) {
-    cards.erase(std::remove_if(cards.begin(), cards.end(),
-        [&cardToRemove](const Card& card) {
-            return card.getColor() == cardToRemove.getColor() &&
-                card.getNumber() == cardToRemove.getNumber() &&
-                card.getType() == cardToRemove.getType();
-        }),
-        cards.end());
 }
 
 
@@ -268,24 +266,15 @@ void Deck::displayDeck(RenderWindow& window, float xOffset, float yOffset) {
     }
 }
 
-
-// FILL THE STASH WITH ONE CARD FROM THE MAIN DECK
-void Deck::initializeStash(Deck& mainDeck) {
-    Card drawnCard = mainDeck.drawCard();
-
-    // Keep drawing cards until a non-wild card is drawn
-    while (drawnCard.isWild()) {
-        drawnCard = mainDeck.drawCard();
+// Getter Functions
+Card Deck::getTopCard() {
+    if (!cards.empty()) {
+        std::cout << "Top card is of stash is: " << cards.back().getColor() << " " << cards.back().getNumber() << std::endl;
+        return cards.back();
     }
-
-    std::cout << "Stash initialized with: " << drawnCard.getColor() << " " << drawnCard.getNumber() << std::endl;
-
-    cards.push_back(drawnCard);
-}
-
-
-void Deck::addCard(const Card& card) {
-    cards.push_back(card);  // Assuming 'cards' is a std::vector<Card> or similar collection
+    else {
+        return Card("null", -404);
+    }
 }
 
 size_t Deck::getSize() const {
@@ -296,10 +285,4 @@ const std::vector<Card>& Deck::getCards() const {
     return cards;
 }
 
-std::string Deck::getRandomColor() {
-    std::string colors[4] = { "redcard", "bluecard", "yellowcard", "greencard" };
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, 3);
-    return colors[dist(gen)];
-}
+

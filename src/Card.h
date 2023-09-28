@@ -1,24 +1,34 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <string>
 
 class Card {
 public:
     Card(const std::string& color, int number);
-    void setCardTexture();
+
+    // Getters
     sf::Texture& getTexture();
+    sf::Texture& getBackTexture();
     int getNumber() const;
     std::string getColor() const;
     std::string getType() const;
+
+    // Operations
     Card& operator=(const Card& other);
     sf::Vector2u getSize() const;
-    sf::Texture& getBackTexture();
-    bool isSpecial();
-    std::string Card::determineType(int number) const;
     void setColor(const std::string& color);
+
+    // Type checks
+    bool isSpecial();
     bool isWild();
 
 private:
-    sf::Texture texture, backTexture;
-    std::string type, color;
+    void setCardTexture();
+    std::string determineType(int number) const;
+
+    sf::Texture texture;
+    sf::Texture backTexture;
+    std::string type;
+    std::string color;
     int number;
 };

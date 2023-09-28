@@ -5,16 +5,20 @@
 class Player {
 public:
     Player();
+
+    // Hand Management
     void drawInitialHand(Deck& mainDeck, int numCards);
-    void playCard(Card card);
     void drawCard(Deck& mainDeck);
-    int getPoints();
-    void addToPoints(int points);
-    int getHandSize();
-    void handleHand(sf::RenderWindow& window, bool isControllable, int& pointerToTurn, Deck& playerHand, Deck& opponentHand, Deck& stashDeck, Deck& mainDeck);
-    Deck& getHand();
     void addCardToHand(Card& card);
-    Card findPlayableCard(const Card& topCard) const;
+    Deck& getHand();
+    int getHandSize();
+
+    // Points Management
+    int getPoints();
+    void addToPoints(int value);
+
+    // Display
+    void handleHand(sf::RenderWindow& window, bool isControllable, int& pointerToTurn, Deck& playerHand, Deck& opponentHand, Deck& stashDeck, Deck& mainDeck);
 
 private:
     Deck hand;
