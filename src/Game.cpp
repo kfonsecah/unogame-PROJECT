@@ -29,6 +29,9 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
     startButtonTexture.loadFromFile(BUTTON_START_GAME_PATH);
     unoButtonTexture.loadFromFile(UNO_BUTTON_IMAGE_PATH);
 
+    buttonSoundBuffer.loadFromFile(BUTTON_SOUND_PATH);
+    buttonSound.setBuffer(buttonSoundBuffer);
+
     // Configure sprites
     backgroundSprite.setTexture(backgroundTexture);
     backgroundSprite2.setTexture(backgroundTexture2);
@@ -65,6 +68,7 @@ void Game::handleEvents() {
         else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
             if (inInitialScreen) {
                 if (playButtonSprite.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
+                    buttonSound.play();
                     inInitialScreen = false; 
                     inMainMenu = true;
                    
@@ -72,13 +76,13 @@ void Game::handleEvents() {
             }
             else if (inMainMenu) {
                 if (playerVsPlayerButtonSprite.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
-                   
+                    buttonSound.play();
                     inMainMenu = false;
                     inPlayerVsPlayerScreen = true;
                     gameStarted = true;
                 }
                 else if (playerVsPcButtonSprite.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y))) {
-
+                    buttonSound.play();
                     std::cout<<"Player vs PC"<<std::endl;
                     inMainMenu = false;
                     inPlayerVsPCScreen = true;

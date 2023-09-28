@@ -14,6 +14,7 @@
 #define BUTTON_PLAYER_VS_PC_PATH "./resources/buttonPlayerVsPC.png"
 #define BUTTON_START_GAME_PATH "./resources/start.png"
 #define UNO_BUTTON_IMAGE_PATH "./resources/UnoButton.png"
+#define BUTTON_SOUND_PATH "./resources/SD_NAVIGATE_59.mp3"
 
 
 class Game {
@@ -23,6 +24,10 @@ public:
     void run();
 
 private:
+
+    sf::SoundBuffer buttonSoundBuffer;
+    sf::Sound buttonSound;
+    
 
     sf::RenderWindow _window;
     sf::Texture backgroundTexture, backgroundTexture2, playButtonTexture,
