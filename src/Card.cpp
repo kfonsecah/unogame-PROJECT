@@ -34,12 +34,9 @@ sf::Texture& Card::getTexture() {
 }
 
 sf::Texture& Card::getBackTexture() {
-    static bool isBackTextureLoaded = false;
-    if (!isBackTextureLoaded) {
-        if (!backTexture.loadFromFile("resources/cards/EMPTYReverse.png")) {
-            std::cout << "Failed to load back texture. Reason: Unable to open file" << std::endl;
-        }
-        isBackTextureLoaded = true;
+    static sf::Texture backTexture; // Make it static to load only once
+    if (backTexture.getSize().x == 0) { // Check if it's not loaded yet
+        backTexture.loadFromFile("resources/cards/EMPTYReverse.png");
     }
     return backTexture;
 }
@@ -47,8 +44,6 @@ sf::Texture& Card::getBackTexture() {
 int Card::getNumber() const {
     return number;
 }
-
-
 
 std::string Card::getColor() const {
     return color;
@@ -62,7 +57,7 @@ Card& Card::operator=(const Card& other) {
     if (this != &other) {
         color = other.color;
         number = other.number;
-        texture = other.texture;
+        texture = other.texture; // Assuming sf::Texture supports assignment
     }
     return *this;
 }
@@ -71,11 +66,14 @@ sf::Vector2u Card::getSize() const {
     return texture.getSize();
 }
 
-bool Card::isSpecial() const {
-    return number < 0;
+bool Card::isWild() {
+    return number == -5 || number == -4;
+}
+
+bool Card::isSpecial() {
+    return number == -1 || number == -2 || number == -3;
 }
 
 void Card::setColor(const std::string& newColor) {
     color = newColor;
 }
-

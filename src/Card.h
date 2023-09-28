@@ -12,9 +12,10 @@ public:
     Card& operator=(const Card& other);
     sf::Vector2u getSize() const;
     sf::Texture& getBackTexture();
-    bool isSpecial() const;
+    bool isSpecial();
     std::string Card::determineType(int number) const;
     void setColor(const std::string& color);
+    bool isWild();
 
 private:
     sf::Texture texture, backTexture;

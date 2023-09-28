@@ -7,6 +7,7 @@
 #define BUTTON_PLAYER_VS_PC_PATH "./resources/buttonPlayerVsPC.png"
 #define BUTTON_START_GAME_PATH "./resources/start.png"
 #define UNO_BUTTON_IMAGE_PATH "./resources/UnoButton.png"
+#define BACKGROUND_IMAGE_PATH2 "./resources/background2.jpg"
 
 
 Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
@@ -29,6 +30,7 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
 
     // Load textures
     backgroundTexture.loadFromFile(BACKGROUND_IMAGE_PATH);
+    backgroundTexture2.loadFromFile(BACKGROUND_IMAGE_PATH2);
     playButtonTexture.loadFromFile(BUTTON_PLAY_PATH);
     playerVsPlayerButtonTexture.loadFromFile(BUTTON_PLAYER_VS_PLAYER_PATH);
     playerVsPcButtonTexture.loadFromFile(BUTTON_PLAYER_VS_PC_PATH);
@@ -37,6 +39,7 @@ Game::Game() : _window(sf::VideoMode(1280, 720), "UNO Game") {
 
     // Configure sprites
     backgroundSprite.setTexture(backgroundTexture);
+    backgroundSprite2.setTexture(backgroundTexture2);
 
     unoButtonSprite.setTexture(unoButtonTexture);
     unoButtonSprite.setPosition(300, 100);
@@ -127,8 +130,8 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
     
 
     sf::Sprite eatButton(buttonTexture);
-    eatButton.setPosition(100, 250);
-    eatButton.setScale(0.3f, 0.3f);
+    eatButton.setPosition(040, 550);
+    eatButton.setScale(0.1f, 0.1f);
 
   
 
@@ -163,13 +166,15 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
         // CHECK IF THE PLAYER'S TURN IS OVER
         if (turn % 2 == 0) {
             window.clear();
-            window.draw(backgroundSprite);
+            
+            window.draw(backgroundSprite2);
             player.handleHand(window, false, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck);
             entity.handleHand(window, true, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck);
         }
         else {
             window.clear();
-            window.draw(backgroundSprite);
+            
+            window.draw(backgroundSprite2);
             player.handleHand(window, true, turn, player.getHand(), entity.getHand(), stashDeck, mainDeck);
             entity.handleHand(window, false, turn, entity.getHand(), player.getHand(), stashDeck, mainDeck);
         }
@@ -193,23 +198,32 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
     window.clear();
 }
 
+void Game::handleInGamePVE(sf::RenderWindow& window) {
+
+}
+
+
 
 
 
 void Game::render() {
     _window.clear();
-    _window.draw(backgroundSprite);
+   
+    
 
     if (inInitialScreen) {
+        _window.draw(backgroundSprite);
         _window.draw(playButtonSprite);
     }
     else if (inMainMenu) {
+        _window.draw(backgroundSprite);
         _window.draw(playerVsPlayerButtonSprite);
         _window.draw(playerVsPcButtonSprite);
     }
     else if (inPlayerVsPlayerScreen) {
-		// Handle in-game rendering for player vs. player
-		_window.draw(backgroundSprite);
+
+
+        _window.draw(backgroundSprite2);
         
         HandleInGamePVP(_window);
         
