@@ -19,7 +19,7 @@ This repository houses a command-line implementation of the iconic card game, Un
 
 ## 🤝 Contributing 
 
-**Your brilliance is welcome here Alejandro!** 🌟
+**Your brilliance is welcome here!** 🌟
 
 Fork this repository, refine it, and send in those pull requests. 🍴
 
