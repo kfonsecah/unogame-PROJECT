@@ -124,8 +124,7 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
     // Create the button
     sf::Texture buttonTexture;
     buttonTexture.loadFromFile("resources\\EatButton.png");
-        // Handle the case where loading the image failed
-        // You can add error handling here
+
     
 
     sf::Sprite eatButton(buttonTexture);
@@ -198,8 +197,8 @@ void Game::HandleInGamePVP(sf::RenderWindow& window) {
 }
 
 void Game::handleEatButton() {
-    int turn = 1;  // Parece que estás reinicializando el turno cada vez que este método es llamado. ¿Estás seguro de que esto es correcto?
-    if (player.getHandSize() < 18) {  // Verificación añadida aquí
+    int turn = 1;  
+    if (player.getHandSize() < 18) {  
         Card drawnCard = mainDeck.drawCard();
         if (turn % 2 == 0) {  // Entity's turn
             
@@ -217,7 +216,7 @@ void Game::handleInGamePVE(sf::RenderWindow& window) {
     bool gameOver = false;
     int totalDrawnCards = 0;  // Track the total number of drawn cards
 
- // Renamed to make it clear tis is an AI opponent
+
 
     player.drawInitialHand(mainDeck, 7);
     entity.drawInitialHand(mainDeck, 7);
@@ -244,14 +243,14 @@ void Game::handleInGamePVE(sf::RenderWindow& window) {
             }
         }
 
-        // Simple AI logic: If the entity has fewer than 3 cards, draw a card
+        // Simple AI logic
         if (entity.getHandSize() < 3) {
             Card drawnCard = mainDeck.drawCard();
             entity.addCardToHand(drawnCard);
             turn++;
         }
 
-        // Check whose turn it is and render accordingly
+        
         if (turn % 2 == 0) {
             window.clear();
             window.draw(backgroundSprite2);
@@ -281,8 +280,8 @@ void Game::handleInGamePVE(sf::RenderWindow& window) {
 void Game::initializeUnoButton() {
     unoButtonTexture.loadFromFile("resources\\UnoButton.png");
     unoButtonSprite.setTexture(unoButtonTexture);
-    unoButtonSprite.setPosition(500, 550);  // Puedes ajustar la posición como prefieras
-    unoButtonSprite.setScale(0.1f, 0.1f);   // Y el tamaño también
+    unoButtonSprite.setPosition(500, 550); 
+    unoButtonSprite.setScale(0.1f, 0.1f); 
 }
 
 bool Game::shouldDisplayUnoButton() {
